@@ -68,7 +68,7 @@ export function listFilter(searchInput : string, sortBy : string, descend : bool
   let lst : beanData[] = [];
 
   allBeans.forEach(item => {
-    if (item.flavorName.substring(0, searchInput.length).toLocaleLowerCase() == searchInput.toLocaleLowerCase()) {
+    if (item.flavorName.substring(0, searchInput.length).toLocaleLowerCase() === searchInput.toLocaleLowerCase()) {
       lst.push(item);
     }
   });
@@ -105,9 +105,9 @@ export function galleryFilter(attributes : (keyof beanData)[], values : any[]) :
             valid = false;
           }
         }
-      } else if (values[i] == ''){
+      } else if (values[i] === ''){
         continue;
-      } else if (item[attributes[i]] != values[i]) {
+      } else if (item[attributes[i]] !== values[i]) {
         valid = false;
         break;
       }
@@ -146,7 +146,7 @@ export function updateDetailColor(color : string, main : boolean) {
   let boxes = document.getElementsByClassName('detailBox');
   let arrows = document.getElementsByClassName('detailArrow');
 
-  if (boxes.length == 0) {
+  if (boxes.length === 0) {
     return;
   }
 
@@ -163,7 +163,7 @@ export function updateDetailColor(color : string, main : boolean) {
 function changeColor(color : string, amount : number) {
     const parts = color.match(/\d+/g);  
 
-    if (parts == null) {
+    if (parts === null) {
       return color;
     }
 

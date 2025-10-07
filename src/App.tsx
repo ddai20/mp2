@@ -7,7 +7,7 @@ import {
   useParams
 } from "react-router-dom";
 import './App.scss';
-import {listFilter, galleryFilter, updateDetailColor, getColorGroups, getGroupNames} from './index';
+import {listFilter, galleryFilter, updateDetailColor, getColorGroups, getGroupNames, beanData} from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import Select, { MultiValue, SingleValue } from 'react-select';
@@ -37,7 +37,7 @@ function Galleryview() {
   useEffect(() => updateDetailColor('rgb(222, 184, 135)', true))
 
   function changeColorGroup(event : SingleValue<{value: string;label: string;}>) {
-    if (event == null) {
+    if (event === null) {
       newColor('');
     } else {
       newColor(event.value);
@@ -45,7 +45,7 @@ function Galleryview() {
   }
 
   function changeGroupName(event : MultiValue<{value: string;label: string;}>) {
-    if (event == null) {
+    if (event === null) {
       newNames([]);
     } else {
       newNames(Array.from(event.map((item) => item.value)));
@@ -119,7 +119,7 @@ function ListView() {
         </div>
         <div>
           <h3>Direction: </h3>
-          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value == 'true')}>
+          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value === 'true')}>
             <option value='false'>Ascending</option>
             <option value="true">Descending</option>
           </select>
@@ -141,11 +141,21 @@ function DetailView() {
   let params = useParams();
   const [currId, nextId] = useState(params.id);
 
-  let currBean = galleryFilter(['beanId'],[currId])[0];
+  let currBean : beanData;
+
+  if (currId !== undefined) {
+    currBean = galleryFilter(['beanId'],[parseInt(currId)])[0];
+  } else {
+    currBean = galleryFilter(['beanId'],[1])[0];
+  }
 
   useEffect(() => {
     updateDetailColor(currBean.backgroundColor, false);
   });
+
+  if (currBean === null) {
+    return (<div></div>);
+  }
 
   let groupNameFormatted = "";
 
@@ -157,7 +167,7 @@ function DetailView() {
   currBean.ingredients.forEach(item => ingredientsFormatted += item + ", ");
   ingredientsFormatted = ingredientsFormatted.substring(0,ingredientsFormatted.length - 2);
 
-  if (currId == undefined) {
+  if (currId === undefined) {
     return <div></div>;
   }
 
