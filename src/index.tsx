@@ -4,7 +4,7 @@ import './index.scss';
 import App from './App';
 import axios from 'axios';
 
-interface beanData {
+export interface beanData {
   beanId : number,
   groupName : string[],
   ingredients : string[],
@@ -24,6 +24,17 @@ const root = ReactDOM.createRoot(
 );
 
 let allBeans : beanData[];
+let groupNames : Set<string> = new Set();
+let colorGroups : Set<string> = new Set();
+
+
+export function getGroupNames() : string[] {
+  return Array.from(groupNames).sort();
+}
+
+export function getColorGroups() : string[] {
+  return Array.from(colorGroups).sort();
+}
 
 function Start() : beanData[] {
   axios.get('https://jellybellywikiapi.onrender.com/api/beans',{
@@ -37,6 +48,14 @@ function Start() : beanData[] {
     );
 
     allBeans = JSON.parse(response.data).items;
+
+    allBeans.forEach((item) => {
+      item.groupName.forEach((name) => {
+        groupNames.add(name);
+      })
+      colorGroups.add(item.colorGroup);
+    })
+
   });
 
   return [];
@@ -48,9 +67,9 @@ function Start() : beanData[] {
 export function listFilter(searchInput : string, sortBy : string, descend : boolean) : beanData[] {
   let lst : beanData[] = [];
 
-  allBeans.forEach(element => {
-    if (element.flavorName.substring(0, searchInput.length).toLocaleLowerCase() == searchInput.toLocaleLowerCase()) {
-      lst.push(element);
+  allBeans.forEach(item => {
+    if (item.flavorName.substring(0, searchInput.length).toLocaleLowerCase() == searchInput.toLocaleLowerCase()) {
+      lst.push(item);
     }
   });
 
@@ -76,18 +95,32 @@ export function listFilter(searchInput : string, sortBy : string, descend : bool
 export function galleryFilter(attributes : (keyof beanData)[], values : any[]) : beanData[] {
   let lst : beanData[] = [];
 
-  allBeans.forEach(element => {
+  allBeans.forEach(item => {
+    let valid = true;
     for (let i = 0; i < attributes.length; i++) {
-      if (element[attributes[i]] == values[i]) {
-        lst.push(element);
+      if (Array.isArray(values[i])) {
+        values[i].forEach((item2 : any) => {
+          if (!((item[attributes[i]] as string[]).includes(item2))) {
+            valid = false;
+          }
+        })
+      } else if (values[i] == ''){
+        continue;
+      } else if (item[attributes[i]] != values[i]) {
+        valid = false;
+        break;
       }
+    }
+
+    if (valid) {
+      lst.push(item);
     }
   });
 
   return lst;
 }
 
-export function updateDetailColor(color : string) {
+export function updateDetailColor(color : string, main : boolean) {
   let navBar = document.getElementsByClassName('navBar')[0] as HTMLElement;
   let navBarText = document.getElementsByClassName('navBarText');
   
@@ -95,6 +128,11 @@ export function updateDetailColor(color : string) {
 
   let darker = changeColor(navBar.style.color, 50);
   let lighter = changeColor(navBar.style.color, -50);
+
+  if (main) {
+    darker= 'rgb(222, 184, 135)';
+    lighter = 'rgb(245, 245, 220)';
+  }
 
   navBar.style.backgroundColor = lighter;
   navBar.style.borderBottomColor = darker;

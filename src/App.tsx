@@ -7,21 +7,22 @@ import {
   useParams
 } from "react-router-dom";
 import './App.scss';
-import {listFilter, galleryFilter, updateDetailColor} from './index';
+import {listFilter, galleryFilter, updateDetailColor, beanData, getColorGroups, getGroupNames} from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
-import { Form } from 'react-bootstrap';
+import Select, { MultiValue, SingleValue } from 'react-select';
 
 function App() {
   return (
     <BrowserRouter basename='/mp2'>
       <div>
         <div className='navBar'>
-          <Link to='../list' className='navBarText'> <b>List View</b> </Link>
+          <Link to='../' className='navBarText'> <b>List View</b> </Link>
           <Link to='../gallery' className='navBarText'> <b>Gallery View</b> </Link>
         </div>
         <Routes>
-          <Route path= '/list' element={<ListView/>}/>
+          <Route path= '/' element={<ListView/>}/>
+          <Route path= '/gallery' element={<Galleryview/>}/>
           <Route path='/:id' element={<DetailView/>}/>
         </Routes>
       </div>
@@ -29,18 +30,84 @@ function App() {
   );
 }
 
+function Galleryview() {
+  const[colorGroup, newColor] = useState('');
+  const[groupNames, newNames] = useState([] as string[]);
+
+  useEffect(() => updateDetailColor('rgb(222, 184, 135)', true))
+
+  function changeColorGroup(event : SingleValue<{value: string;label: string;}>) {
+    console.log("hello");
+    if (event == null) {
+      newColor('');
+    } else {
+      newColor(event.value);
+    }
+  }
+
+  function changeGroupName(event : MultiValue<{value: string;label: string;}>) {
+    if (event == null) {
+      newNames([]);
+    } else {
+      newNames(Array.from(event.map((item) => item.value)));
+    }
+  }
+
+  return(
+    <div className='galleryView'>
+      <h1> Jelly Bean Gallery</h1>
+      <h2> Filter Options</h2>
+      <div className='groupingBox'>
+        <div className='groupInput'>
+          <p>Group Color: </p>
+            <Select
+              isClearable
+              options = {getColorGroups().map((item) => ({'value': item, 'label' : item}))}
+              onChange={(event) => changeColorGroup(event)}
+            />
+        </div>
+        <div className='groupInput'>
+          <p>Group Name: </p>
+          <Select
+            isMulti
+            options = {getGroupNames().map((item) => ({'value': item, 'label' : item}))}
+            onChange={(event) => changeGroupName(event)}
+          />
+        </div>
+      </div>
+      <div className='galleryEntryBox'>
+        {galleryFilter(['colorGroup','groupName'], [colorGroup,groupNames]).map((item) => 
+          (<Link className='galleryLink' to={`../${item.beanId}`}>
+            <div className='galleryEntries'>
+              <div>
+                <img src={item.imageUrl} className='galleryImage'></img>
+              </div>
+              <h3>{item.flavorName}</h3>
+              <div>
+                {item.description}
+              </div>
+            </div>
+          </Link>
+          ))}
+      </div>
+
+    </div>
+  )
+}
+
+
 function ListView() {
   const [currSearch, nextSearch] = useState("");
   const [sortBy, newSort] = useState('beanId');
   const [descend, newDescend] = useState(false);
 
-  useEffect(() => updateDetailColor('rgb(222, 184, 135)'))
+  useEffect(() => updateDetailColor('rgb(222, 184, 135)', true))
 
   let beanList = listFilter(currSearch, sortBy, !descend);
 
   return (
   <div className='listView'>
-    <h1> Jelly Bean Encyclopedia </h1>
+    <h1> Jelly Bean List </h1>
     <div className='listBox'>
       <input type='text' name="searchBar" onInput={(event) => {nextSearch(event.currentTarget.value);}} placeholder='Search for a bean!' className='searchInput'/>
       <div className='listParametersBox'>
@@ -80,7 +147,7 @@ function DetailView() {
   console.log(currBean);
 
   useEffect(() => {
-    updateDetailColor(currBean.backgroundColor);
+    updateDetailColor(currBean.backgroundColor, false);
   });
 
   let groupNameFormatted = "";
