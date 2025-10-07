@@ -68,7 +68,7 @@ export function listFilter(searchInput : string, sortBy : string, descend : bool
   let lst : beanData[] = [];
 
   allBeans.forEach(item => {
-    if (item.flavorName.substring(0, searchInput.length).toLocaleLowerCase() === searchInput.toLocaleLowerCase()) {
+    if (item.flavorName.substring(0, searchInput.length).toLocaleLowerCase() == searchInput.toLocaleLowerCase()) {
       lst.push(item);
     }
   });
@@ -99,15 +99,15 @@ export function galleryFilter(attributes : (keyof beanData)[], values : any[]) :
     let valid = true;
     for (let i = 0; i < attributes.length; i++) {
       if (Array.isArray(values[i])) {
-        for (let j = 0; j < values[i].size(); j++) {
+        for (let j = 0; j < values[i].length; j++) {
           let item2 = values[i][j];
           if (!((item[attributes[i]] as string[]).includes(item2))) {
             valid = false;
           }
         }
-      } else if (values[i] === ''){
+      } else if (values[i] == ''){
         continue;
-      } else if (item[attributes[i]] !== values[i]) {
+      } else if (item[attributes[i]] != values[i]) {
         valid = false;
         break;
       }
@@ -146,7 +146,7 @@ export function updateDetailColor(color : string, main : boolean) {
   let boxes = document.getElementsByClassName('detailBox');
   let arrows = document.getElementsByClassName('detailArrow');
 
-  if (boxes.length === 0) {
+  if (boxes.length == 0) {
     return;
   }
 

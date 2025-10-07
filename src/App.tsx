@@ -37,7 +37,6 @@ function Galleryview() {
   useEffect(() => updateDetailColor('rgb(222, 184, 135)', true))
 
   function changeColorGroup(event : SingleValue<{value: string;label: string;}>) {
-    console.log("hello");
     if (event == null) {
       newColor('');
     } else {
@@ -120,7 +119,7 @@ function ListView() {
         </div>
         <div>
           <h3>Direction: </h3>
-          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value === 'true')}>
+          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value == 'true')}>
             <option value='false'>Ascending</option>
             <option value="true">Descending</option>
           </select>
@@ -144,8 +143,6 @@ function DetailView() {
 
   let currBean = galleryFilter(['beanId'],[currId])[0];
 
-  console.log(currBean);
-
   useEffect(() => {
     updateDetailColor(currBean.backgroundColor, false);
   });
@@ -160,7 +157,7 @@ function DetailView() {
   currBean.ingredients.forEach(item => ingredientsFormatted += item + ", ");
   ingredientsFormatted = ingredientsFormatted.substring(0,ingredientsFormatted.length - 2);
 
-  if (currId === undefined) {
+  if (currId == undefined) {
     return <div></div>;
   }
 
