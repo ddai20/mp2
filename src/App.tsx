@@ -7,7 +7,7 @@ import {
   useParams
 } from "react-router-dom";
 import './App.scss';
-import {listFilter, galleryFilter, updateDetailColor, beanData, getColorGroups, getGroupNames} from './index';
+import {listFilter, galleryFilter, updateDetailColor, getColorGroups, getGroupNames} from './index';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
 import Select, { MultiValue, SingleValue } from 'react-select';
@@ -80,7 +80,7 @@ function Galleryview() {
           (<Link className='galleryLink' to={`../${item.beanId}`}>
             <div className='galleryEntries'>
               <div>
-                <img src={item.imageUrl} className='galleryImage'></img>
+                <img alt="Bean" src={item.imageUrl} className='galleryImage'></img>
               </div>
               <h3>{item.flavorName}</h3>
               <div>
@@ -120,7 +120,7 @@ function ListView() {
         </div>
         <div>
           <h3>Direction: </h3>
-          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value == 'true')}>
+          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value === 'true')}>
             <option value='false'>Ascending</option>
             <option value="true">Descending</option>
           </select>
@@ -129,7 +129,7 @@ function ListView() {
       <div className='listEntryBox'>
         {beanList.map((item) =>
           (<div className='listEntry'>
-            <img src={item.imageUrl} className='listImage'></img>
+            <img alt="Bean" src={item.imageUrl} className='listImage'></img>
               <Link className='listText' to={`../${item.beanId}`}> {item.flavorName}</Link>
           </div>)
         )}
@@ -160,7 +160,7 @@ function DetailView() {
   currBean.ingredients.forEach(item => ingredientsFormatted += item + ", ");
   ingredientsFormatted = ingredientsFormatted.substring(0,ingredientsFormatted.length - 2);
 
-  if (currId == undefined) {
+  if (currId === undefined) {
     return <div></div>;
   }
 
@@ -172,7 +172,7 @@ function DetailView() {
         <Link to={`../${prevPath}`} onClick={() => nextId(prevPath)} className='detailArrow' title='Previous Item'> <FontAwesomeIcon icon={faChevronLeft} size='5x' /> </Link>
         <div className='detailBox'>
           <h1>{currBean.flavorName}</h1>
-          <img className='detailImage' src={currBean.imageUrl}></img>
+          <img alt="Bean" className='detailImage' src={currBean.imageUrl}></img>
           <p> {currBean.description}</p>
           <div>
             <h2> Group Name</h2>
