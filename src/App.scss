@@ -36,3 +36,132 @@
     transform: rotate(360deg);
   }
 }
+
+.detailView {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 5%;
+  align-items: center;
+  width: 100%;
+}
+
+.detailArrow {
+  color: lightgray;
+  background-color: transparent;
+  border: none;
+}
+
+.detailBox  {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: cornflowerblue;
+  width: 60%;
+  height: 80%;
+  text-align: center;
+  border-radius: 15px;
+}
+
+.detailImage {
+  width: 30%;
+}
+
+.baseInfo {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.navBar {
+  background-color: beige;
+  height: 50px;
+  width: 100%;
+  border-bottom: 5px solid burlywood;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+.navBarText {
+  text-align: center;
+  color: burlywood;
+  font-size: 30px;
+  text-decoration: none;
+}
+
+.listView {
+  color:burlywood;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.searchInput {
+  width: 49%;
+  height: 30px;
+  margin-top: 30px;
+  border: 2px solid burlywood;
+}
+
+.listBox {
+  width: 80%;
+  background-color: beige;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.listEntryBox {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.listEntry {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+}
+
+.listImage {
+  height: 50px;
+  width: 20%;
+  background-color: white;
+  border: 2px solid burlywood;
+}
+
+.listText {
+  text-align: center;
+  width: 80%;
+  height: 50px;
+  border: 2px solid burlywood;
+  background-color: white;
+  justify-content: center;
+  border-left: none;
+  text-decoration: none;
+  color: burlywood;
+}
+
+.listParametersBox {
+  display: flex;
+  flex-direction: row;
+  color: rgb(222, 184, 135);
+  background-color: rgb(245, 245, 220);
+  text-align: center;
+  align-items: center;
+  width: 60%;
+  justify-content: space-evenly;
+  margin-bottom: 20px;
+}

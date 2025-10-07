@@ -1,34 +1,138 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter,
   Routes,
   Route,
-  Link
+  Link,
+  useParams
 } from "react-router-dom";
-import logo from './logo.svg';
 import './App.scss';
+import {listFilter, galleryFilter, updateDetailColor} from './index';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons'
+import { Form } from 'react-bootstrap';
 
 function App() {
   return (
-    <BrowserRouter basename='\mp2'>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.tsx</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+    <BrowserRouter basename='/mp2'>
+      <div>
+        <div className='navBar'>
+          <Link to='../list' className='navBarText'> <b>List View</b> </Link>
+          <Link to='../gallery' className='navBarText'> <b>Gallery View</b> </Link>
+        </div>
+        <Routes>
+          <Route path= '/list' element={<ListView/>}/>
+          <Route path='/:id' element={<DetailView/>}/>
+        </Routes>
       </div>
     </BrowserRouter>
   );
 }
+
+function ListView() {
+  const [currSearch, nextSearch] = useState("");
+  const [sortBy, newSort] = useState('beanId');
+  const [descend, newDescend] = useState(false);
+
+  useEffect(() => updateDetailColor('rgb(222, 184, 135)'))
+
+  let beanList = listFilter(currSearch, sortBy, !descend);
+
+  return (
+  <div className='listView'>
+    <h1> Jelly Bean Encyclopedia </h1>
+    <div className='listBox'>
+      <input type='text' name="searchBar" onInput={(event) => {nextSearch(event.currentTarget.value);}} placeholder='Search for a bean!' className='searchInput'/>
+      <div className='listParametersBox'>
+        <div>
+          <h3>Sort By: </h3>
+          <select name='sorting selection' onChange={(event) => newSort(event.currentTarget.value)}>
+            <option value='beanId'>ID</option>
+            <option value="flavorName">Name</option>
+          </select> 
+        </div>
+        <div>
+          <h3>Direction: </h3>
+          <select name='direction selection' onChange={(event) => newDescend(event.currentTarget.value == 'true')}>
+            <option value='false'>Ascending</option>
+            <option value="true">Descending</option>
+          </select>
+        </div> 
+      </div>
+      <div className='listEntryBox'>
+        {beanList.map((item) =>
+          (<div className='listEntry'>
+            <img src={item.imageUrl} className='listImage'></img>
+              <Link className='listText' to={`../${item.beanId}`}> {item.flavorName}</Link>
+          </div>)
+        )}
+      </div>
+    </div>
+  </div>);
+}
+
+function DetailView() {
+  let params = useParams();
+  const [currId, nextId] = useState(params.id);
+
+  let currBean = galleryFilter(['beanId'],[currId])[0];
+
+  console.log(currBean);
+
+  useEffect(() => {
+    updateDetailColor(currBean.backgroundColor);
+  });
+
+  let groupNameFormatted = "";
+
+  currBean.groupName.forEach(item => groupNameFormatted += item + ", ");
+  groupNameFormatted = groupNameFormatted.substring(0,groupNameFormatted.length - 2);
+
+  let ingredientsFormatted = "";
+
+  currBean.ingredients.forEach(item => ingredientsFormatted += item + ", ");
+  ingredientsFormatted = ingredientsFormatted.substring(0,ingredientsFormatted.length - 2);
+
+  if (currId == undefined) {
+    return <div></div>;
+  }
+
+  let nextPath = Math.min(114,(parseInt(currId) + 1)).toString();
+  let prevPath = Math.max(1,parseInt(currId) - 1).toString();
+
+  return (
+      <div className='detailView'>
+        <Link to={`../${prevPath}`} onClick={() => nextId(prevPath)} className='detailArrow' title='Previous Item'> <FontAwesomeIcon icon={faChevronLeft} size='5x' /> </Link>
+        <div className='detailBox'>
+          <h1>{currBean.flavorName}</h1>
+          <img className='detailImage' src={currBean.imageUrl}></img>
+          <p> {currBean.description}</p>
+          <div>
+            <h2> Group Name</h2>
+            <p>{groupNameFormatted}</p>
+          </div>
+          <div className='baseInfo'>
+            <div>
+              <h3>Color Group: <i>{currBean.colorGroup}</i></h3>
+              <h3>Gluten Free: <i>{currBean.glutenFree.toString()}</i></h3>
+            </div>
+            <div>
+              <h3>Sugar Free: <i>{currBean.sugarFree.toString()}</i></h3>
+              <h3>Kosher: <i>{currBean.kosher.toString()}</i></h3>
+            </div>
+          </div>
+          <div>
+            <h2>Ingredients</h2>
+            <p>{ingredientsFormatted}</p>
+          </div>
+          <div>
+            <h3>ID: <i>{currBean.beanId}</i></h3>
+          </div>
+        </div>
+        <Link to={`../${nextPath}`} onClick={() => nextId(nextPath)} className='detailArrow' title='Previous Item'> <FontAwesomeIcon icon={faChevronRight} size='5x' /> </Link>
+      </div>);
+}
+
+
 
 export default App;

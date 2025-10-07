@@ -3,19 +3,29 @@ import ReactDOM from 'react-dom/client';
 import './index.scss';
 import App from './App';
 import axios from 'axios';
-import { strict } from 'assert';
+
+interface beanData {
+  beanId : number,
+  groupName : string[],
+  ingredients : string[],
+  flavorName : string,
+  description : string,
+  colorGroup : string,
+  backgroundColor : string,
+  imageUrl : string,
+  glutenFree : boolean,
+  sugarFree : boolean,
+  seasonal : boolean,
+  kosher : boolean
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+let allBeans : beanData[];
 
-function Start() : any[] {
+function Start() : beanData[] {
   axios.get('https://jellybellywikiapi.onrender.com/api/beans',{
     responseType: 'stream',
     params: {pageIndex: 1, pageSize: 114},
@@ -26,7 +36,7 @@ function Start() : any[] {
       </React.StrictMode>
     );
 
-    return JSON.parse(response.data).items;
+    allBeans = JSON.parse(response.data).items;
   });
 
   return [];
@@ -35,11 +45,11 @@ function Start() : any[] {
 
 //True -> Descending
 //sortBy = [id, name]
-function listFilter(beanData : any[], searchInput : any, sortBy : string, descend : boolean) : Array<Object> {
-  let lst : Array<Object> = [];
+export function listFilter(searchInput : string, sortBy : string, descend : boolean) : beanData[] {
+  let lst : beanData[] = [];
 
-  beanData.forEach(element => {
-    if (element.flavorName.substring(0, searchInput.length) == searchInput) {
+  allBeans.forEach(element => {
+    if (element.flavorName.substring(0, searchInput.length).toLocaleLowerCase() == searchInput.toLocaleLowerCase()) {
       lst.push(element);
     }
   });
@@ -63,10 +73,10 @@ function listFilter(beanData : any[], searchInput : any, sortBy : string, descen
   return lst;
 }
 
-function galleryFilter(beanData : any[], attributes : string[], values : any[]) : Array<Object> {
-  let lst : Array<Object> = [];
+export function galleryFilter(attributes : (keyof beanData)[], values : any[]) : beanData[] {
+  let lst : beanData[] = [];
 
-  beanData.forEach(element => {
+  allBeans.forEach(element => {
     for (let i = 0; i < attributes.length; i++) {
       if (element[attributes[i]] == values[i]) {
         lst.push(element);
@@ -75,6 +85,56 @@ function galleryFilter(beanData : any[], attributes : string[], values : any[]) 
   });
 
   return lst;
+}
+
+export function updateDetailColor(color : string) {
+  let navBar = document.getElementsByClassName('navBar')[0] as HTMLElement;
+  let navBarText = document.getElementsByClassName('navBarText');
+  
+  navBar.style.color = color;
+
+  let darker = changeColor(navBar.style.color, 50);
+  let lighter = changeColor(navBar.style.color, -50);
+
+  navBar.style.backgroundColor = lighter;
+  navBar.style.borderBottomColor = darker;
+
+  for(let i = 0; i < navBarText.length; i++) {
+    let t = navBarText[i] as HTMLElement;
+    t.style.color = darker;
+  }
+
+  let boxes = document.getElementsByClassName('detailBox');
+  let arrows = document.getElementsByClassName('detailArrow');
+
+  if (boxes.length == 0) {
+    return;
+  }
+
+  let box = boxes[0] as HTMLElement;
+  box.style.color = darker;
+
+  for(let i = 0; i < arrows.length; i++) {
+    let t = arrows[i] as HTMLElement;
+    t.style.color = lighter;
+  }
+
+}
+
+function changeColor(color : string, amount : number) {
+    const parts = color.match(/\d+/g);  
+
+    if (parts == null) {
+      return color;
+    }
+
+    let p = parts.map(Number);
+
+    let r = Math.min(Math.max(0, p[0] - amount), 230);
+    let g = Math.min(Math.max(0, p[1] - amount), 230);
+    let b = Math.min(Math.max(0, p[2] - amount), 230);
+
+    return `rgb(${r}, ${g}, ${b})`;
 }
 
 Start();
